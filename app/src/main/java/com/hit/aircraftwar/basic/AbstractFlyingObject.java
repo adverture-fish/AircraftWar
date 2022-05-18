@@ -11,7 +11,7 @@ import com.hit.aircraftwar.application.ImageManager;
 /**
  * 可飞行对象的父类
  *
- * @author hitsz
+ * @author lxl,qh
  */
 public abstract class AbstractFlyingObject {
 
@@ -61,9 +61,6 @@ public abstract class AbstractFlyingObject {
      * 通常标记为 false的对象会再下次刷新时清除
      */
     protected boolean isValid = true;
-
-    public AbstractFlyingObject() {
-    }
 
     public AbstractFlyingObject(int locationX, int locationY, int speedX, int speedY) {
         this.locationX = locationX;

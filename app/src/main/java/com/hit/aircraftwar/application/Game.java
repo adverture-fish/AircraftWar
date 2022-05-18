@@ -20,9 +20,9 @@ import java.util.concurrent.*;
 /**
  * 游戏主面板，游戏启动
  *
- * @author hitsz
+ * @author lxl,qh
  */
-public abstract class Game {
+public class Game {
 
     /**
      * Scheduled 线程池，用于任务调度
@@ -78,11 +78,24 @@ public abstract class Game {
         allProp = new LinkedList<>();
         //Scheduled 线程池，用于定时任务调度
         executorService = new ScheduledThreadPoolExecutor(3);
-        //启动英雄机鼠标监听
-        new HeroController(this, heroAircraft);
 
     }
 
+    public List<AbstractAircraft> getEnemyAircrafts(){
+        return enemyAircrafts;
+    }
+
+    public List<BaseBullet> getEnemyBullets(){
+        return enemyBullets;
+    }
+
+    public List<BaseBullet> getHeroBullets(){
+        return heroBullets;
+    }
+
+    public List<AbstractProp> getAllProp(){
+        return allProp;
+    }
 
     /**
      * 游戏启动入口，执行游戏逻辑
@@ -148,11 +161,6 @@ public abstract class Game {
 
         };
 
-        /**
-         * 以固定延迟时间进行执行
-         * 本次任务执行完成后，需要延迟设定的延迟时间，才会执行新的任务
-         */
-
     }
 
     //***********************
@@ -182,7 +190,7 @@ public abstract class Game {
     }
 
     private void shootAction() {
-        // TODO 敌机射击
+        // 敌机射击
         for(AbstractAircraft aircraft : enemyAircrafts){
             List<BaseBullet> bullets = aircraft.shoot();
             enemyBullets.addAll(bullets);
@@ -218,7 +226,7 @@ public abstract class Game {
      * 3. 英雄获得补给
      */
     private void crashCheckAction() {
-        // TODO 敌机子弹攻击英雄
+        // 敌机子弹攻击英雄
         for (BaseBullet bullet : enemyBullets) {
             if (bullet.notValid()) {
                 continue;
@@ -249,7 +257,7 @@ public abstract class Game {
                     bullet.vanish();
                     aircraftObserver.removeBullet(bullet);
                     if (enemyAircraft.notValid()) {
-                        // TODO 获得分数，产生道具补给
+                        //  获得分数，产生道具补给
                         aircraftObserver.removeAircraft(enemyAircraft);
                         if(enemyAircraft.isBoss()){
                             bossExist = false;
@@ -268,7 +276,7 @@ public abstract class Game {
             }
         }
 
-        // Todo: 我方获得道具，道具生效
+        // 我方获得道具，道具生效
         for (AbstractProp prop : allProp) {
             if (prop.notValid()) {
                 continue;
