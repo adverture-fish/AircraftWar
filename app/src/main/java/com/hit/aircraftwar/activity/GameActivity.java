@@ -69,6 +69,7 @@ public class GameActivity extends AppCompatActivity {
         setContentView(gameSurfaceView);
         game.action();
         heroMoving();
+        System.out.println("jaja");
     }
 
     public void getScreenHW() {
