@@ -1,6 +1,9 @@
 package com.hit.aircraftwar.application;
 
 
+import static com.hit.aircraftwar.activity.GameActivity.screenHeight;
+import static com.hit.aircraftwar.activity.GameActivity.screenWidth;
+
 import com.hit.aircraftwar.aircraft.AbstractAircraft;
 import com.hit.aircraftwar.aircraft.HeroAircraft;
 import com.hit.aircraftwar.basic.AbstractFlyingObject;
@@ -70,14 +73,14 @@ public class Game {
 
 
     public Game() {
-        heroAircraft = HeroAircraft.getHeroAircraft();
+        heroAircraft =HeroAircraft.getHeroAircraft();
         aircraftObserver = new AircraftObserver();
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         allProp = new LinkedList<>();
         //Scheduled 线程池，用于定时任务调度
-        executorService = new ScheduledThreadPoolExecutor(3);
+        executorService = new ScheduledThreadPoolExecutor(10);
 
     }
 
@@ -160,6 +163,7 @@ public class Game {
             }
 
         };
+        executorService.execute(task);
 
     }
 
