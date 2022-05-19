@@ -26,8 +26,8 @@ public class BossEnemyFactory implements AbstractEnemyFactory{
     @Override
     public AbstractAircraft createEnemy(double bossHpRate){
         return new BossEnemy(
-                (int) ( Math.random() * (screenWidth - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
-                (int) (Math.random() * screenHeight * 0.2)*1,
+                (int) (Math.random() * (screenWidth - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
+                (int) (Math.random() * screenHeight * 0.2),
                 3,
                 0,
                 (int) (500 * bossHpRate),

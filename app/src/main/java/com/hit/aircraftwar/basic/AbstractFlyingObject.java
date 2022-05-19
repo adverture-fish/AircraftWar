@@ -140,7 +140,7 @@ public abstract class AbstractFlyingObject {
     public int getWidth() {
         if (width == -1){
             // 若未设置，则查询图片宽度并设置
-            width = image.getWidth();
+            width = ImageManager.get(this).getWidth();
         }
         return width;
     }
@@ -148,7 +148,7 @@ public abstract class AbstractFlyingObject {
     public int getHeight() {
         if (height == -1){
             // 若未设置，则查询图片高度并设置
-            height = image.getHeight();
+            height = ImageManager.get(this).getHeight();
         }
         return height;
     }
