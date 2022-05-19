@@ -28,9 +28,9 @@ public class EliteEnemyFactory implements AbstractEnemyFactory{
     @Override
     public AbstractAircraft createEnemy(double enemyHpRate){
         return new EliteEnemy(
-                (int) ( Math.random() * (screenWidth - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
-                (int) (Math.random() * screenHeight * 0.2)*1,
-                3,
+                (int) (Math.random() * (screenWidth - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
+                (int) (Math.random() * screenHeight * 0.2),
+                15,
                 5,
                 (int) (60 * enemyHpRate),
                 enemyShootStrategy

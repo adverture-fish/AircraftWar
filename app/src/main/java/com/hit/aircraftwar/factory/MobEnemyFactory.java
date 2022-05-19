@@ -26,8 +26,8 @@ public class MobEnemyFactory implements AbstractEnemyFactory{
     @Override
     public AbstractAircraft createEnemy(double enemyHpRate){
         return new MobEnemy(
-                (int) ( Math.random() * (screenWidth - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
-                (int) (Math.random() * screenHeight * 0.2)*1,
+                (int) ( Math.random() * (screenWidth - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
+                (int) (Math.random() * screenHeight * 0.2),
                 0,
                 5,
                 (int) (30 * enemyHpRate),

@@ -1,9 +1,17 @@
 package com.hit.aircraftwar.application;
 
 
-import static com.hit.aircraftwar.activity.GameActivity.screenHeight;
-import static com.hit.aircraftwar.activity.GameActivity.screenWidth;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+import androidx.annotation.NonNull;
+
+import com.hit.aircraftwar.activity.GameActivity;
 import com.hit.aircraftwar.aircraft.AbstractAircraft;
 import com.hit.aircraftwar.aircraft.HeroAircraft;
 import com.hit.aircraftwar.basic.AbstractFlyingObject;
@@ -16,7 +24,6 @@ import com.hit.aircraftwar.observer.AircraftObserver;
 import com.hit.aircraftwar.prop.AbstractProp;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 
 
@@ -25,12 +32,8 @@ import java.util.concurrent.*;
  *
  * @author lxl,qh
  */
-public class Game {
+public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
 
-    /**
-     * Scheduled 线程池，用于任务调度
-     */
-    private final ScheduledExecutorService executorService;
 
     /**
      * 时间间隔(ms)，控制刷新频率
@@ -45,7 +48,6 @@ public class Game {
     public final AircraftObserver aircraftObserver;
 
     public static boolean bossExist = false;
-    public static boolean gameOverFlag = false;
     private int score = 0;
     private boolean bossHasAppear = false;
     private int stage = 0;
@@ -72,7 +74,23 @@ public class Game {
     protected int bossDefeatNumber = 0;
 
 
-    public Game() {
+    private final SurfaceHolder mSurfaceHolder;
+    private final Paint mPaint;
+    Canvas canvas ;
+    int backGroundTop = 0;
+    int screenWidth = GameActivity.screenWidth, screenHeight = GameActivity.screenHeight;
+    boolean gameOverFlag;
+
+    public GameSurfaceView(Context context) {
+
+        super(context);
+        gameOverFlag = false;
+
+        mPaint = new Paint();  //设置画笔
+        mSurfaceHolder = this.getHolder();
+        mSurfaceHolder.addCallback(this);
+        this.setFocusable(true);
+
         heroAircraft =HeroAircraft.getHeroAircraft();
         aircraftObserver = new AircraftObserver();
         enemyAircrafts = new LinkedList<>();
@@ -80,96 +98,70 @@ public class Game {
         enemyBullets = new LinkedList<>();
         allProp = new LinkedList<>();
         //Scheduled 线程池，用于定时任务调度
-        executorService = new ScheduledThreadPoolExecutor(10);
 
-    }
-
-    public List<AbstractAircraft> getEnemyAircrafts(){
-        return enemyAircrafts;
-    }
-
-    public List<BaseBullet> getEnemyBullets(){
-        return enemyBullets;
-    }
-
-    public List<BaseBullet> getHeroBullets(){
-        return heroBullets;
-    }
-
-    public List<AbstractProp> getAllProp(){
-        return allProp;
-    }
-
-    /**
-     * 游戏启动入口，执行游戏逻辑
-     */
-    public void action() {
-
-
-        // 定时任务：绘制、对象产生、碰撞判定、击毁及结束判定
-        Runnable task = () -> {
-
-
-            time += timeInterval;
-
-            // 周期性执行（控制频率）
-            if (shootTimeCountAndNewCycleJudge()) {
-                System.out.println(time);
-                // 飞机射出子弹
-                shootAction();
-            }
-
-            if(enemyCreateTimeCountAndNewCycleJudge()){
-                // 新敌机产生
-                if(score - stage * bossAppear >= bossAppear){
-                    stage++;
-                    if(!bossExist && isBossAppear){
-                        bossExist = true;
-                        bossHasAppear = true;
-                        AbstractEnemyFactory factory = new BossEnemyFactory();
-                        enemyAircrafts.add(factory.createEnemy(bossHpRate));
-                    }
-                }
-                if (enemyAircrafts.size() < enemyMaxNumber) {
-                    Random r = new Random();
-                    int randomNumber = r.nextInt(100);
-                    AbstractEnemyFactory factory;
-                    if(randomNumber < eliteEnemyAppear) {factory = new EliteEnemyFactory();}
-                    else {factory = new MobEnemyFactory();}
-                    AbstractAircraft enemyAircraft = factory.createEnemy(enemyHpRate);
-                    enemyAircrafts.add(enemyAircraft);
-                    aircraftObserver.addAircraft(enemyAircraft);
-                }
-            }
-
-            // 子弹移动
-            bulletsMoveAction();
-
-            // 飞机移动
-            aircraftsMoveAction();
-
-            // 撞击检测
-            crashCheckAction();
-
-            // 后处理
-            postProcessAction();
-
-            // 游戏结束检查
-            if (heroAircraft.getHp() <= 0) {
-                // 游戏结束
-                executorService.shutdown();
-                gameOverFlag = true;
-                System.out.println("Game Over!");
-            }
-
-        };
-        executorService.execute(task);
 
     }
 
     //***********************
     //      Action 各部分
     //***********************
+
+    private void action(){
+
+        time += timeInterval;
+
+        // 周期性执行（控制频率）
+        if (shootTimeCountAndNewCycleJudge()) {
+            // 飞机射出子弹
+            shootAction();
+        }
+
+        if(enemyCreateTimeCountAndNewCycleJudge()){
+            // 新敌机产生
+            if(score - stage * bossAppear >= bossAppear){
+                stage++;
+                if(!bossExist && isBossAppear){
+                    bossExist = true;
+                    bossHasAppear = true;
+                    AbstractEnemyFactory factory = new BossEnemyFactory();
+                    enemyAircrafts.add(factory.createEnemy(bossHpRate));
+                }
+            }
+            if (enemyAircrafts.size() < enemyMaxNumber) {
+                Random r = new Random();
+                int randomNumber = r.nextInt(100);
+                AbstractEnemyFactory factory;
+                if(randomNumber < eliteEnemyAppear) {factory = new EliteEnemyFactory();}
+                else {factory = new MobEnemyFactory();}
+                AbstractAircraft enemyAircraft = factory.createEnemy(enemyHpRate);
+                enemyAircrafts.add(enemyAircraft);
+                aircraftObserver.addAircraft(enemyAircraft);
+            }
+        }
+
+        // 子弹移动
+        bulletsMoveAction();
+
+        // 飞机移动
+        aircraftsMoveAction();
+
+        // 撞击检测
+        crashCheckAction();
+
+        // 后处理
+        postProcessAction();
+
+        // 绘图
+        draw();
+
+        // 游戏结束检查
+        if (heroAircraft.getHp() <= 0) {
+            // 游戏结束
+            gameOverFlag = true;
+            System.out.println("Game Over!");
+        }
+
+    }
 
     private boolean shootTimeCountAndNewCycleJudge() {
         shootCycleTime += timeInterval;
@@ -316,4 +308,79 @@ public class Game {
         enemyAircrafts.removeIf(AbstractFlyingObject::notValid);
     }
 
+
+    //***********************
+    //      Draw 各部分
+    //***********************
+
+
+    private void draw(){
+        //通过SurfaceHolder对象的lockCanvans()方法，我们可以获取当前的Canvas绘图对象
+        canvas = mSurfaceHolder.lockCanvas();
+        //绘图的画布
+        if(canvas == null){
+            return;
+        }
+
+        //绘制背景，图片滚动
+        canvas.drawBitmap(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop- ImageManager.BACKGROUND_IMAGE.getHeight(), mPaint);
+        canvas.drawBitmap(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, mPaint);
+        backGroundTop += 1;
+        if(backGroundTop == GameActivity.screenHeight)
+            this.backGroundTop = 0;
+
+        //绘制英雄机
+        canvas.drawBitmap(ImageManager.HERO_IMAGE, heroAircraft.getLocationX() - (float)ImageManager.HERO_IMAGE.getWidth() / 2,
+                heroAircraft.getLocationY() - (float)ImageManager.HERO_IMAGE.getHeight() / 2, mPaint);
+
+        //绘制敌机和子弹
+        paintImageWithPositionRevised(allProp);
+        paintImageWithPositionRevised(enemyAircrafts);
+        paintImageWithPositionRevised(enemyBullets);
+        paintImageWithPositionRevised(heroBullets);
+
+        //通过unlockCanvasAndPost(mCanvas)方法对画布内容进行提交
+        mSurfaceHolder.unlockCanvasAndPost(canvas);
+    }
+
+    private void paintImageWithPositionRevised(List<? extends AbstractFlyingObject> flyingObjects){
+        if(flyingObjects.size() != 0){
+            for (int i = 0; i < flyingObjects.size(); i++) {
+                AbstractFlyingObject flyingObject = flyingObjects.get(i);
+                Bitmap image = flyingObject.getImage();
+                assert image != null : flyingObject.getClass().getName() + " has no image! ";
+                canvas.drawBitmap(image, flyingObject.getLocationX() - (float)image.getWidth() / 2 , flyingObject.getLocationY() - (float)image.getHeight() / 2, mPaint);
+            }
+        }
+    }
+
+    /**
+     * 游戏启动入口，执行游戏逻辑
+     */
+
+    public void run() {
+        //设置一个循环来绘制，通过标志位来控制开启绘制还是停止
+        while (!gameOverFlag){
+            synchronized (mSurfaceHolder){
+                action();
+            }
+            try {
+                Thread.sleep(timeInterval);
+            }catch (Exception ignored){}
+        }
+    }
+    @Override
+    public void surfaceCreated(@NonNull SurfaceHolder holder) {
+        // 定时任务：绘制、对象产生、碰撞判定、击毁及结束判定
+        new Thread(this).start();
+    }
+    @Override
+    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+        screenWidth = width;
+        screenHeight = height;
+    }
+    @Override
+    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+        gameOverFlag = true;
+    }
 }
