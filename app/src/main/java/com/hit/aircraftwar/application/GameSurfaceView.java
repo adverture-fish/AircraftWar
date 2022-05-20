@@ -5,7 +5,9 @@ package com.hit.aircraftwar.application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -139,6 +141,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
+        heroMoving();
+
         // 子弹移动
         bulletsMoveAction();
 
@@ -151,8 +155,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // 后处理
         postProcessAction();
 
+
         // 绘图
         draw();
+
+
 
         // 游戏结束检查
         if (heroAircraft.getHp() <= 0) {
@@ -213,6 +220,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             prop.forward();
         }
     }
+
+    public void heroMoving(){
+
+    }
+
+
 
 
     /**
@@ -339,6 +352,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paintImageWithPositionRevised(enemyBullets);
         paintImageWithPositionRevised(heroBullets);
 
+        paintScoreAndLife();
+
         //通过unlockCanvasAndPost(mCanvas)方法对画布内容进行提交
         mSurfaceHolder.unlockCanvasAndPost(canvas);
     }
@@ -352,6 +367,16 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 canvas.drawBitmap(image, flyingObject.getLocationX() - (float)image.getWidth() / 2 , flyingObject.getLocationY() - (float)image.getHeight() / 2, mPaint);
             }
         }
+    }
+
+    private void paintScoreAndLife() {
+        int x = 25;
+        int y = 60;
+        mPaint.setTextSize(80);
+        mPaint.setColor(Color.LTGRAY);
+        canvas.drawText("SCORE:" + score, x, y, mPaint);
+        y = y + 80;
+        canvas.drawText("LIFE:" + this.heroAircraft.getHp(), x, y, mPaint);
     }
 
     /**

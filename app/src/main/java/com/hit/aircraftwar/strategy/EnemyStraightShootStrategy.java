@@ -1,6 +1,7 @@
 package com.hit.aircraftwar.strategy;
 
 import com.hit.aircraftwar.aircraft.AbstractAircraft;
+import com.hit.aircraftwar.application.ImageManager;
 import com.hit.aircraftwar.bullet.BaseBullet;
 import com.hit.aircraftwar.bullet.EnemyBullet;
 
@@ -26,7 +27,7 @@ public class EnemyStraightShootStrategy implements ShootStrategy{
         for(int i=0; i<shootNum; i++){
             // 子弹发射位置相对飞机位置向前偏移
             // 多个子弹横向分散
-            baseBullet = new EnemyBullet(x + (i*2 - shootNum + 1)*10, y, speedX, speedY, power);
+            baseBullet = new EnemyBullet(x + (i*2 - shootNum + 1)*10, y + speedY + ImageManager.ENEMY_BULLET_IMAGE.getHeight() / 2, speedX, speedY, power);
             bullets.add(baseBullet);
         }
         return bullets;
