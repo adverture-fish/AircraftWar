@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -54,12 +53,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private boolean bossHasAppear = false;
     private int stage = 0;
     protected int time = 0;
+    private String difficulty;
+    private Bitmap backGroundImage = ImageManager.BACKGROUND_IMAGE;
 
     /**
      * 周期（ms)
      * 指示子弹的发射、敌机的产生频率
      */
-    private int shootCycleTime = 0;
+    private int heroShootCycleTime = 0;
+    private int enemyShootCycleTime = 0;
     private int enemyCreateCycleTime = 0;
 
     /**
@@ -71,7 +73,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     protected double bossHpRate = 1;
     protected double enemyHpRate = 1;
     protected int bossAppear = 500;
-    protected int shootCycleDuration = 600;
+    protected int heroShootCycleDuration = 800;
+    protected int enemyShootCycleDuration = 1200;
     protected int enemyCreateCycleDuration = 600;
     protected int bossDefeatNumber = 0;
 
@@ -83,10 +86,17 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     int screenWidth = GameActivity.screenWidth, screenHeight = GameActivity.screenHeight;
     boolean gameOverFlag;
 
-    public GameSurfaceView(Context context) {
+    public GameSurfaceView(Context context, String difficulty) {
 
         super(context);
         gameOverFlag = false;
+        this.difficulty = difficulty;
+        if("medium".equals(difficulty)){
+            backGroundImage = ImageManager.BACKGROUND_IMAGE_MEDIUM;
+        }
+        else if("difficult".equals(difficulty)){
+            backGroundImage = ImageManager.BACKGROUND_IMAGE_DIFFICULT;
+        }
 
         mPaint = new Paint();  //设置画笔
         mSurfaceHolder = this.getHolder();
@@ -99,8 +109,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         allProp = new LinkedList<>();
-        //Scheduled 线程池，用于定时任务调度
-
 
     }
 
@@ -113,9 +121,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         time += timeInterval;
 
         // 周期性执行（控制频率）
-        if (shootTimeCountAndNewCycleJudge()) {
+        if (heroShootTimeCountAndNewCycleJudge()) {
             // 飞机射出子弹
-            shootAction();
+            heroShootAction();
+        }
+        if (enemyShootTimeCountAndNewCycleJudge()){
+            enemyShootAction();
         }
 
         if(enemyCreateTimeCountAndNewCycleJudge()){
@@ -155,7 +166,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // 后处理
         postProcessAction();
 
-
+        changeDifficulty();
         // 绘图
         draw();
 
@@ -170,11 +181,22 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     }
 
-    private boolean shootTimeCountAndNewCycleJudge() {
-        shootCycleTime += timeInterval;
-        if (shootCycleTime >= shootCycleDuration && shootCycleTime - timeInterval < shootCycleTime) {
+    private boolean heroShootTimeCountAndNewCycleJudge() {
+        heroShootCycleTime += timeInterval;
+        if (heroShootCycleTime >= heroShootCycleDuration && heroShootCycleTime - timeInterval < heroShootCycleTime) {
             // 跨越到新的周期
-            shootCycleTime %= shootCycleDuration;
+            heroShootCycleTime %= heroShootCycleDuration;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    private boolean enemyShootTimeCountAndNewCycleJudge() {
+        enemyShootCycleTime += timeInterval;
+
+        if (enemyShootCycleTime >= enemyShootCycleDuration && enemyShootCycleTime - timeInterval < enemyShootCycleTime) {
+            // 跨越到新的周期
+            enemyShootCycleTime %= enemyShootCycleDuration;
             return true;
         } else {
             return false;
@@ -192,16 +214,21 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    private void shootAction() {
+    private void heroShootAction() {
+
+        // 英雄射击
+        heroBullets.addAll(heroAircraft.shoot());
+    }
+
+    private void enemyShootAction() {
         // 敌机射击
         for(AbstractAircraft aircraft : enemyAircrafts){
             List<BaseBullet> bullets = aircraft.shoot();
             enemyBullets.addAll(bullets);
             aircraftObserver.addBullets(bullets);
         }
-        // 英雄射击
-        heroBullets.addAll(heroAircraft.shoot());
     }
+
 
     private void bulletsMoveAction() {
         for (BaseBullet bullet : heroBullets) {
@@ -225,7 +252,25 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             heroAircraft.setLocation(GameActivity.getHeroLocationX(), GameActivity.getHeroLocationY());
     }
 
+    public void changeDifficulty(){
+        if(time % 10000 == 0 && time > 200 && enemyCreateCycleDuration > 200 ){
+            if("medium".equals(difficulty)){
+                bossHpRate *= 1.1;
+                enemyHpRate *= 1.1;
+                enemyCreateCycleDuration =(int) ((double)enemyCreateCycleDuration / 1.25);
+                System.out.println("difficulty increase");
 
+
+            }
+            if("difficult".equals(difficulty)){
+                bossHpRate *= 1.5;
+                enemyHpRate *= 1.25;
+                enemyCreateCycleDuration =(int) ((double)enemyCreateCycleDuration / 1.5);
+                enemyShootCycleDuration = (int)((double) enemyShootCycleDuration / 1.25);
+                heroShootCycleDuration *= 1.25;
+            }
+        }
+    }
 
 
     /**
@@ -336,8 +381,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
 
         //绘制背景，图片滚动
-        canvas.drawBitmap(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop- ImageManager.BACKGROUND_IMAGE.getHeight(), mPaint);
-        canvas.drawBitmap(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, mPaint);
+        canvas.drawBitmap(backGroundImage, 0, this.backGroundTop- ImageManager.BACKGROUND_IMAGE.getHeight(), mPaint);
+        canvas.drawBitmap(backGroundImage, 0, this.backGroundTop, mPaint);
         backGroundTop += 1;
         if(backGroundTop == GameActivity.screenHeight)
             this.backGroundTop = 0;

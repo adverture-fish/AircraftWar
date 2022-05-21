@@ -13,7 +13,7 @@ import android.widget.Switch;
 import com.hit.aircraftwar.R;
 
 public class MainActivity extends AppCompatActivity  {
-
+    public static final String EXTRA_MESSAGE = "difficulty";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,17 +23,30 @@ public class MainActivity extends AppCompatActivity  {
         easyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameLunch();
-
+                gameLunch("easy");
+            }
+        });
+        Button mediumButton = (Button) findViewById(R.id.mediumButton);
+        mediumButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameLunch("medium");
+            }
+        });
+        Button difficultButton = (Button)findViewById(R.id.diffiucltButton);
+        difficultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameLunch("difficult");
             }
         });
     }
 
 
-    public void gameLunch(){
+    public void gameLunch(String message){
         Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
-
     }
 
 }

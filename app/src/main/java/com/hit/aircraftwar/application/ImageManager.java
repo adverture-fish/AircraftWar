@@ -43,6 +43,8 @@ public class ImageManager {
     public static Bitmap PROP_BLOOD_IMAGE;
     public static Bitmap PROP_BOMB_IMAGE;
     public static Bitmap PROP_BULLET_IMAGE;
+    public static Bitmap BACKGROUND_IMAGE_MEDIUM;
+    public static Bitmap BACKGROUND_IMAGE_DIFFICULT;
 
 
 

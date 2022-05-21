@@ -3,6 +3,8 @@ package com.hit.aircraftwar.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -44,6 +46,8 @@ public class GameActivity extends Activity {
     private static float heroLocationY;
     GameSurfaceView gameSurfaceView;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +57,10 @@ public class GameActivity extends Activity {
         prepareImageResources();
         prepareHashMapImages();
 
-        gameSurfaceView = new GameSurfaceView(this);
+        Intent intent = getIntent();
+        String difficulty = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+
+        gameSurfaceView = new GameSurfaceView(this, difficulty);
         heroAircraft = HeroAircraft.getHeroAircraft();
         if(screenHeight !=0 && screenWidth !=0){
             heroLocationX = (float) screenWidth / 2;
@@ -65,7 +72,6 @@ public class GameActivity extends Activity {
 
     /**
      * 获取屏幕触摸点位置
-     * @param event
      * @return true
      */
     @Override
@@ -97,7 +103,8 @@ public class GameActivity extends Activity {
         ImageManager.PROP_BULLET_IMAGE = BitmapFactory.decodeResource(getResources(), R.drawable.prop_bullet);
         ImageManager.HERO_BULLET_IMAGE = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_hero);
         ImageManager.ENEMY_BULLET_IMAGE = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_enemy);
-
+        ImageManager.BACKGROUND_IMAGE_MEDIUM = BitmapFactory.decodeResource(getResources(), R.drawable.bg2);
+        ImageManager.BACKGROUND_IMAGE_DIFFICULT = BitmapFactory.decodeResource(getResources(), R.drawable.bg5);
 
     }
 
@@ -112,4 +119,6 @@ public class GameActivity extends Activity {
         ImageManager.CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), ImageManager.HERO_BULLET_IMAGE);
         ImageManager.CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ImageManager.ENEMY_BULLET_IMAGE);
     }
+
+
 }
