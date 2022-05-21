@@ -62,7 +62,7 @@ public class HeroAircraft extends AbstractAircraft {
                 if(heroAircraft == null) {
                     heroAircraft = new HeroAircraft(
                             screenWidth / 2,
-                            screenHeight - ImageManager.HERO_IMAGE.getHeight() ,
+                            screenHeight - ImageManager.HERO_IMAGE.getHeight() / 2 ,
                             0, 0, 100, heroShootStrategy
                     );
                 }

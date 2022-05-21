@@ -222,7 +222,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void heroMoving(){
-
+            heroAircraft.setLocation(GameActivity.getHeroLocationX(), GameActivity.getHeroLocationY());
     }
 
 
