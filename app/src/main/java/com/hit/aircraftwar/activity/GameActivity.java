@@ -3,11 +3,15 @@ package com.hit.aircraftwar.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -22,6 +26,7 @@ import com.hit.aircraftwar.aircraft.HeroAircraft;
 import com.hit.aircraftwar.aircraft.MobEnemy;
 import com.hit.aircraftwar.application.GameSurfaceView;
 import com.hit.aircraftwar.application.ImageManager;
+import com.hit.aircraftwar.application.MusicService;
 import com.hit.aircraftwar.bullet.EnemyBullet;
 import com.hit.aircraftwar.bullet.HeroBullet;
 import com.hit.aircraftwar.prop.BombSupplyProp;
@@ -29,9 +34,11 @@ import com.hit.aircraftwar.prop.FireSupplyProp;
 import com.hit.aircraftwar.prop.HpSupplyProp;
 
 public class GameActivity extends Activity {
+    public MusicService.MyBinder myBinder;
+    private Connect conn;
+
     public static int screenWidth;
     public static int screenHeight;
-    private HeroAircraft heroAircraft;
 
     //触摸点数据，因为只有一组数据故设为静态变量，方便取得
     public static  float getHeroLocationX() {
@@ -46,8 +53,6 @@ public class GameActivity extends Activity {
     private static float heroLocationY;
     GameSurfaceView gameSurfaceView;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,11 +62,12 @@ public class GameActivity extends Activity {
         prepareImageResources();
         prepareHashMapImages();
 
-        Intent intent = getIntent();
-        String difficulty = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        conn = new Connect();
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent,conn, Context.BIND_AUTO_CREATE);
 
-        gameSurfaceView = new GameSurfaceView(this, difficulty);
-        heroAircraft = HeroAircraft.getHeroAircraft();
+        gameSurfaceView = new GameSurfaceView(this, myBinder);
+        HeroAircraft heroAircraft = HeroAircraft.getHeroAircraft();
         if(screenHeight !=0 && screenWidth !=0){
             heroLocationX = (float) screenWidth / 2;
             heroLocationY =(float) (screenHeight - ImageManager.HERO_IMAGE.getHeight() / 2);
@@ -72,6 +78,7 @@ public class GameActivity extends Activity {
 
     /**
      * 获取屏幕触摸点位置
+     * @param event
      * @return true
      */
     @Override
@@ -90,6 +97,25 @@ public class GameActivity extends Activity {
     }
 
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        unbindService(conn);
+    }
+
+    class Connect implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service){
+            Log.i("music demo","Service Connnected");
+            myBinder = (MusicService.MyBinder)service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    }
+
 
     private void prepareImageResources() {
 
@@ -103,8 +129,7 @@ public class GameActivity extends Activity {
         ImageManager.PROP_BULLET_IMAGE = BitmapFactory.decodeResource(getResources(), R.drawable.prop_bullet);
         ImageManager.HERO_BULLET_IMAGE = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_hero);
         ImageManager.ENEMY_BULLET_IMAGE = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_enemy);
-        ImageManager.BACKGROUND_IMAGE_MEDIUM = BitmapFactory.decodeResource(getResources(), R.drawable.bg2);
-        ImageManager.BACKGROUND_IMAGE_DIFFICULT = BitmapFactory.decodeResource(getResources(), R.drawable.bg5);
+
 
     }
 
@@ -119,6 +144,4 @@ public class GameActivity extends Activity {
         ImageManager.CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), ImageManager.HERO_BULLET_IMAGE);
         ImageManager.CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ImageManager.ENEMY_BULLET_IMAGE);
     }
-
-
 }
