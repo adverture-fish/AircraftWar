@@ -2,6 +2,7 @@ package com.hit.aircraftwar.application;
 
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -33,6 +34,7 @@ import java.util.*;
  *
  * @author lxl,qh
  */
+@SuppressLint("ViewConstructor")
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
 
 
@@ -53,7 +55,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private boolean bossHasAppear = false;
     private int stage = 0;
     protected int time = 0;
-    private String difficulty;
+    private final String difficulty;
     private Bitmap backGroundImage = ImageManager.BACKGROUND_IMAGE;
 
     /**
@@ -79,6 +81,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     protected int bossDefeatNumber = 0;
 
 
+//    private final MusicService.MyBinder myBinder;
     private final SurfaceHolder mSurfaceHolder;
     private final Paint mPaint;
     Canvas canvas ;
@@ -90,6 +93,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         super(context);
         gameOverFlag = false;
+
+//        this.myBinder = myBinder;
         this.difficulty = difficulty;
         if("medium".equals(difficulty)){
             backGroundImage = ImageManager.BACKGROUND_IMAGE_MEDIUM;
@@ -97,7 +102,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         else if("difficult".equals(difficulty)){
             backGroundImage = ImageManager.BACKGROUND_IMAGE_DIFFICULT;
         }
-
+        System.out.println("game begin---");
         mPaint = new Paint();  //设置画笔
         mSurfaceHolder = this.getHolder();
         mSurfaceHolder.addCallback(this);
@@ -136,6 +141,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 if(!bossExist && isBossAppear){
                     bossExist = true;
                     bossHasAppear = true;
+//                    myBinder.playBossBgm();
                     AbstractEnemyFactory factory = new BossEnemyFactory();
                     enemyAircrafts.add(factory.createEnemy(bossHpRate));
                 }
@@ -176,6 +182,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         if (heroAircraft.getHp() <= 0) {
             // 游戏结束
             gameOverFlag = true;
+//            myBinder.playGameOver();
             System.out.println("Game Over!");
         }
 
@@ -217,11 +224,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private void heroShootAction() {
 
         // 英雄射击
+//        myBinder.playShoot();
         heroBullets.addAll(heroAircraft.shoot());
     }
 
     private void enemyShootAction() {
         // 敌机射击
+//        myBinder.playShoot();
         for(AbstractAircraft aircraft : enemyAircrafts){
             List<BaseBullet> bullets = aircraft.shoot();
             enemyBullets.addAll(bullets);
@@ -307,6 +316,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 if (enemyAircraft.crash(bullet)) {
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
+//                    myBinder.playHit();
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     aircraftObserver.removeBullet(bullet);
@@ -314,6 +324,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         //  获得分数，产生道具补给
                         aircraftObserver.removeAircraft(enemyAircraft);
                         if(enemyAircraft.isBoss()){
+//                            myBinder.playBgm();
                             bossExist = false;
                             bossDefeatNumber++;
                         }
@@ -338,6 +349,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             if (heroAircraft.crash(prop)) {
                 // 英雄机捡到道具
                 // 道具生效
+//                myBinder.playSupply();
                 score += prop.effect(heroAircraft, aircraftObserver);
                 prop.vanish();
             }

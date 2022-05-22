@@ -3,11 +3,16 @@ package com.hit.aircraftwar.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -22,6 +27,7 @@ import com.hit.aircraftwar.aircraft.HeroAircraft;
 import com.hit.aircraftwar.aircraft.MobEnemy;
 import com.hit.aircraftwar.application.GameSurfaceView;
 import com.hit.aircraftwar.application.ImageManager;
+import com.hit.aircraftwar.application.MusicService;
 import com.hit.aircraftwar.bullet.EnemyBullet;
 import com.hit.aircraftwar.bullet.HeroBullet;
 import com.hit.aircraftwar.prop.BombSupplyProp;
@@ -29,9 +35,11 @@ import com.hit.aircraftwar.prop.FireSupplyProp;
 import com.hit.aircraftwar.prop.HpSupplyProp;
 
 public class GameActivity extends Activity {
+    public MusicService.MyBinder myBinder;
+    private Connect conn;
+
     public static int screenWidth;
     public static int screenHeight;
-    private HeroAircraft heroAircraft;
 
     //触摸点数据，因为只有一组数据故设为静态变量，方便取得
     public static  float getHeroLocationX() {
@@ -57,11 +65,16 @@ public class GameActivity extends Activity {
         prepareImageResources();
         prepareHashMapImages();
 
-        Intent intent = getIntent();
-        String difficulty = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        Intent gameIntent = getIntent();
+        String difficulty = gameIntent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+
+        conn = new Connect();
+        Intent musicIntent = new Intent(this, MusicService.class);
+        bindService(musicIntent,conn, Context.BIND_AUTO_CREATE);
+        myBinder.playBgm();
 
         gameSurfaceView = new GameSurfaceView(this, difficulty);
-        heroAircraft = HeroAircraft.getHeroAircraft();
+        HeroAircraft heroAircraft = HeroAircraft.getHeroAircraft();
         if(screenHeight !=0 && screenWidth !=0){
             heroLocationX = (float) screenWidth / 2;
             heroLocationY =(float) (screenHeight - ImageManager.HERO_IMAGE.getHeight() / 2);
@@ -118,6 +131,25 @@ public class GameActivity extends Activity {
         ImageManager.CLASSNAME_IMAGE_MAP.put(FireSupplyProp.class.getName(), ImageManager.PROP_BULLET_IMAGE);
         ImageManager.CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), ImageManager.HERO_BULLET_IMAGE);
         ImageManager.CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ImageManager.ENEMY_BULLET_IMAGE);
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        unbindService(conn);
+    }
+
+    class Connect implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service){
+            Log.i("music demo","Service Connnected");
+            myBinder = (MusicService.MyBinder)service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
     }
 
 

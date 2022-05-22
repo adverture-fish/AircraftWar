@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity  {
 
 
     public void gameLunch(String message){
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
+        Intent gameIntent = new Intent(this, GameActivity.class);
+        gameIntent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(gameIntent);
     }
 
 }
