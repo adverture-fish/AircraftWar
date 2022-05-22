@@ -28,7 +28,7 @@ import java.util.Map;
 public class ImageManager {
 
     /**
-     * 类名-图片 映射，存储各基类的图片 <br>
+     * 类名-图片 映射，存储各基类的图片
      * 可使用 CLASSNAME_IMAGE_MAP.get( obj.getClass().getName() ) 获得 obj 所属基类对应的图片
      */
     public static final Map<String, Bitmap> CLASSNAME_IMAGE_MAP = new HashMap<>();
