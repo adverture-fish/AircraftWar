@@ -86,6 +86,7 @@ public class GameActivity extends AppCompatActivity {
             heroLocationY =(float) (screenHeight - ImageManager.HERO_IMAGE.getHeight() / 2);
         }
         setContentView(gameSurfaceView);
+
     }
 
     /**
