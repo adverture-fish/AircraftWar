@@ -26,7 +26,9 @@ import com.hit.aircraftwar.observer.AircraftObserver;
 import com.hit.aircraftwar.prop.AbstractProp;
 
 import java.util.*;
-
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -37,6 +39,11 @@ import java.util.*;
 @SuppressLint("ViewConstructor")
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
 
+
+    /**
+     * Scheduled 线程池，用于任务调度
+     */
+    private final ScheduledExecutorService executorService;
 
     /**
      * 时间间隔(ms)，控制刷新频率
@@ -94,6 +101,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         super(context);
         gameOverFlag = false;
 
+        executorService = new ScheduledThreadPoolExecutor(3);
+
 //        this.myBinder = myBinder;
         this.difficulty = difficulty;
         if("medium".equals(difficulty)){
@@ -123,69 +132,72 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private void action(){
 
-        time += timeInterval;
+        Runnable task = ()->{
+            time += timeInterval;
 
-        // 周期性执行（控制频率）
-        if (heroShootTimeCountAndNewCycleJudge()) {
-            // 飞机射出子弹
-            heroShootAction();
-        }
-        if (enemyShootTimeCountAndNewCycleJudge()){
-            enemyShootAction();
-        }
+            // 周期性执行（控制频率）
+            if (heroShootTimeCountAndNewCycleJudge()) {
+                // 飞机射出子弹
+                heroShootAction();
+            }
+            if (enemyShootTimeCountAndNewCycleJudge()){
+                enemyShootAction();
+            }
 
-        if(enemyCreateTimeCountAndNewCycleJudge()){
-            // 新敌机产生
-            if(score - stage * bossAppear >= bossAppear){
-                stage++;
-                if(!bossExist && isBossAppear){
-                    bossExist = true;
-                    bossHasAppear = true;
+            if(enemyCreateTimeCountAndNewCycleJudge()){
+                // 新敌机产生
+                if(score - stage * bossAppear >= bossAppear){
+                    stage++;
+                    if(!bossExist && isBossAppear){
+                        bossExist = true;
+                        bossHasAppear = true;
 //                    myBinder.playBossBgm();
-                    AbstractEnemyFactory factory = new BossEnemyFactory();
-                    enemyAircrafts.add(factory.createEnemy(bossHpRate));
+                        AbstractEnemyFactory factory = new BossEnemyFactory();
+                        enemyAircrafts.add(factory.createEnemy(bossHpRate));
+                    }
+                }
+                if (enemyAircrafts.size() < enemyMaxNumber) {
+                    Random r = new Random();
+                    int randomNumber = r.nextInt(100);
+                    AbstractEnemyFactory factory;
+                    if(randomNumber < eliteEnemyAppear) {factory = new EliteEnemyFactory();}
+                    else {factory = new MobEnemyFactory();}
+                    AbstractAircraft enemyAircraft = factory.createEnemy(enemyHpRate);
+                    enemyAircrafts.add(enemyAircraft);
+                    aircraftObserver.addAircraft(enemyAircraft);
                 }
             }
-            if (enemyAircrafts.size() < enemyMaxNumber) {
-                Random r = new Random();
-                int randomNumber = r.nextInt(100);
-                AbstractEnemyFactory factory;
-                if(randomNumber < eliteEnemyAppear) {factory = new EliteEnemyFactory();}
-                else {factory = new MobEnemyFactory();}
-                AbstractAircraft enemyAircraft = factory.createEnemy(enemyHpRate);
-                enemyAircrafts.add(enemyAircraft);
-                aircraftObserver.addAircraft(enemyAircraft);
-            }
-        }
 
-        heroMoving();
+            heroMoving();
 
-        // 子弹移动
-        bulletsMoveAction();
+            // 子弹移动
+            bulletsMoveAction();
 
-        // 飞机移动
-        aircraftsMoveAction();
+            // 飞机移动
+            aircraftsMoveAction();
 
-        // 撞击检测
-        crashCheckAction();
+            // 撞击检测
+            crashCheckAction();
 
-        // 后处理
-        postProcessAction();
+            // 后处理
+            postProcessAction();
 
-        changeDifficulty();
-        // 绘图
-        draw();
+            changeDifficulty();
+            // 绘图
+            draw();
 
 
 
-        // 游戏结束检查
-        if (heroAircraft.getHp() <= 0) {
-            // 游戏结束
-            gameOverFlag = true;
+            // 游戏结束检查
+            if (heroAircraft.getHp() <= 0) {
+                // 游戏结束
+                gameOverFlag = true;
 //            myBinder.playGameOver();
-            System.out.println("Game Over!");
-        }
+                System.out.println("Game Over!");
+            }
+        };
 
+        executorService.scheduleWithFixedDelay(task, timeInterval, timeInterval, TimeUnit.MILLISECONDS);
     }
 
     private boolean heroShootTimeCountAndNewCycleJudge() {
@@ -442,14 +454,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void run() {
         //设置一个循环来绘制，通过标志位来控制开启绘制还是停止
-        while (!gameOverFlag){
-            synchronized (mSurfaceHolder){
-                action();
-            }
-            try {
-                Thread.sleep(timeInterval);
-            }catch (Exception ignored){}
+        synchronized (mSurfaceHolder){
+            action();
         }
+
     }
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {

@@ -18,20 +18,15 @@
         android:theme="@style/Theme.AircraftWar"
         tools:targetApi="31">
         <service
-            android:name=".BgmMusicService"
-            android:enabled="true"
-            android:exported="true"></service>
-        <service
-            android:name=".MusicService"
+            android:name=".application.MusicService"
             android:enabled="true"
             android:exported="true" />
-
         <activity
             android:name=".activity.EndActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activity.GameActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">

@@ -2,23 +2,16 @@ package com.hit.aircraftwar.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewStub;
-import android.widget.LinearLayout;
 
 import com.hit.aircraftwar.R;
 import com.hit.aircraftwar.aircraft.BossEnemy;
@@ -34,9 +27,8 @@ import com.hit.aircraftwar.prop.BombSupplyProp;
 import com.hit.aircraftwar.prop.FireSupplyProp;
 import com.hit.aircraftwar.prop.HpSupplyProp;
 
-public class GameActivity extends Activity {
-    public MusicService.MyBinder myBinder;
-    private Connect conn;
+public class GameActivity extends AppCompatActivity {
+    private MusicService.MyBinder myBinder;
 
     public static int screenWidth;
     public static int screenHeight;
@@ -50,6 +42,20 @@ public class GameActivity extends Activity {
         return heroLocationY;
     }
 
+    Connect conn ;
+//    private final ServiceConnection conn = new ServiceConnection(){
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service){
+//            System.out.println("Connected");
+//            myBinder = (MusicService.MyBinder) service;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName componentName) {
+//            System.out.println("Disconnected");
+//        }
+//    };
+
     private static float heroLocationX;
     private static float heroLocationY;
     GameSurfaceView gameSurfaceView;
@@ -58,29 +64,28 @@ public class GameActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Intent gameIntent = getIntent();
+        String difficulty = gameIntent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
         getScreenHW();
         //准备图片
         prepareImageResources();
         prepareHashMapImages();
 
-        Intent gameIntent = getIntent();
-        String difficulty = gameIntent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-
         conn = new Connect();
         Intent musicIntent = new Intent(this, MusicService.class);
-        bindService(musicIntent,conn, Context.BIND_AUTO_CREATE);
-        myBinder.playBgm();
+        bindService(musicIntent, conn, Context.BIND_AUTO_CREATE);
+        System.out.println(myBinder);
+        myBinder.playHit();
 
         gameSurfaceView = new GameSurfaceView(this, difficulty);
-        HeroAircraft heroAircraft = HeroAircraft.getHeroAircraft();
         if(screenHeight !=0 && screenWidth !=0){
             heroLocationX = (float) screenWidth / 2;
             heroLocationY =(float) (screenHeight - ImageManager.HERO_IMAGE.getHeight() / 2);
         }
         setContentView(gameSurfaceView);
-
     }
 
     /**
@@ -94,6 +99,8 @@ public class GameActivity extends Activity {
         return true;
 
     }
+
+
     public void getScreenHW() {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -101,7 +108,6 @@ public class GameActivity extends Activity {
         screenWidth = dm.widthPixels;
         screenHeight = dm.heightPixels;
     }
-
 
 
     private void prepareImageResources() {
@@ -151,6 +157,4 @@ public class GameActivity extends Activity {
 
         }
     }
-
-
 }

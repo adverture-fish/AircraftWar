@@ -2,19 +2,6 @@ package com.hit.aircraftwar.application;
 
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.DisplayMetrics;
-
-import com.hit.aircraftwar.R;
-import com.hit.aircraftwar.aircraft.BossEnemy;
-import com.hit.aircraftwar.aircraft.EliteEnemy;
-import com.hit.aircraftwar.aircraft.HeroAircraft;
-import com.hit.aircraftwar.aircraft.MobEnemy;
-import com.hit.aircraftwar.bullet.EnemyBullet;
-import com.hit.aircraftwar.bullet.HeroBullet;
-import com.hit.aircraftwar.prop.BombSupplyProp;
-import com.hit.aircraftwar.prop.FireSupplyProp;
-import com.hit.aircraftwar.prop.HpSupplyProp;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -15,12 +15,14 @@ import android.util.Log;
 import com.hit.aircraftwar.R;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class MusicService extends Service {
-    private final HashMap<Integer, Integer> soundID = new HashMap<>();
+    private HashMap<Integer, Integer> soundID;
     private SoundPool mSoundPool;
     private MediaPlayer player;
+    private MyBinder myBinder;
+    private static final String Tag = "MusicService";
+
     public MusicService() {
 
     }
@@ -29,33 +31,42 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if(Build.VERSION.SDK_INT >= 21){
+        Log.d(Tag, "MusicService Created");
+        if (Build.VERSION.SDK_INT < 21) {
+            mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
+        } else {
             SoundPool.Builder builder = new SoundPool.Builder();
             builder.setMaxStreams(2);
             AudioAttributes.Builder attrBuilder = new AudioAttributes.Builder();
             attrBuilder.setLegacyStreamType(AudioManager.STREAM_MUSIC);
             builder.setAudioAttributes(attrBuilder.build());
             mSoundPool = builder.build();
-        }else{
-            mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
         }
+        soundID = new HashMap<>();
         soundID.put(1, mSoundPool.load(this, R.raw.bullet_hit, 1));
         soundID.put(2, mSoundPool.load(this, R.raw.game_over, 1));
         soundID.put(3, mSoundPool.load(this, R.raw.bullet, 1));
         soundID.put(4, mSoundPool.load(this, R.raw.bomb_explosion, 1));
         soundID.put(5, mSoundPool.load(this, R.raw.get_supply,1));
+        myBinder = new MyBinder();
     }
 
     @Override
     public IBinder onBind(Intent intent){
-        return new MyBinder();
+        if (myBinder == null) {
+            myBinder = new MyBinder();
+        }
+        return myBinder;
     }
 
     /**
      * 相关指令设置
      */
     public class MyBinder extends Binder {
+
+        public void tryBinder(){
+            Log.d(Tag, "Try");
+        }
 
         public void playBgm(){
             if(player.isPlaying()){
