@@ -1,5 +1,10 @@
 package com.hit.aircraftwar.DAO;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.hit.aircraftwar.activity.EndActivity;
 
 import java.io.*;
@@ -23,9 +28,9 @@ public class DaoImpl implements DAO {
     }
 
     @Override
-    public void doAdd(List<Record> data, String path) throws IOException {
+    public void doAdd(List<Record> data, String path, AppCompatActivity activity) throws IOException {
         try {
-            FileOutputStream fos = new FileOutputStream(new File(path));
+            FileOutputStream fos = activity.openFileOutput(path, Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             data.sort((x, y) -> Integer.compare(y.getScore(), x.getScore()));
             for (Record record1 : data) {
@@ -41,19 +46,19 @@ public class DaoImpl implements DAO {
     }
 
     @Override
-    public List<Record> getAll(String path) throws IOException{
+    public List<Record> getAll(String path, AppCompatActivity activity) throws IOException{
         List<Record> records = new ArrayList<>();
         Record record;
         try {
-            FileInputStream fin = new FileInputStream(path);
+            FileInputStream fin = activity.openFileInput(path);
             ObjectInputStream ois = new ObjectInputStream(fin);
             record = (Record) ois.readObject();
             while(record != null){
                 records.add(record);
                 record = (Record) ois.readObject();
             }
-        } catch(EOFException | ClassNotFoundException ignored) {
-
+        } catch(EOFException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return records;
     }
