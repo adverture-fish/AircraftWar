@@ -78,7 +78,7 @@ public class GameActivity extends AppCompatActivity {
         Intent musicIntent = new Intent(this, MusicService.class);
         bindService(musicIntent, conn, Context.BIND_AUTO_CREATE);
         System.out.println(myBinder);
-        myBinder.playHit();
+//        myBinder.playHit();
 
         gameSurfaceView = new GameSurfaceView(this, difficulty);
         if(screenHeight !=0 && screenWidth !=0){

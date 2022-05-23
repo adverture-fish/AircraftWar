@@ -59,6 +59,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private final List<AbstractProp> allProp;
     public final AircraftObserver aircraftObserver;
 
+    protected boolean nextState = false;
     public static boolean bossExist = false;
     private static int score = 0;
     private boolean bossHasAppear = false;
@@ -191,10 +192,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
 
         // 游戏结束检查
-        if (heroAircraft.getHp() <= 0) {
+        if (heroAircraft.getHp() <= 0 && !nextState) {
             // 游戏结束,跳转结束页面
             Context context = getContext(); // from GameSurfaceView/Activity
             gameOverFlag = true;
+            nextState = true;
 //            myBinder.playGameOver();
             System.out.println("Game Over!");
             Intent intent = new Intent(context, EndActivity.class);
