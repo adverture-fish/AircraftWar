@@ -3,6 +3,7 @@ package com.hit.aircraftwar.application;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
+import com.hit.aircraftwar.activity.EndActivity;
 import com.hit.aircraftwar.activity.GameActivity;
 import com.hit.aircraftwar.aircraft.AbstractAircraft;
 import com.hit.aircraftwar.aircraft.HeroAircraft;
@@ -49,7 +51,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public final AircraftObserver aircraftObserver;
 
     public static boolean bossExist = false;
-    private int score = 0;
+    private static int score = 0;
     private boolean bossHasAppear = false;
     private int stage = 0;
     protected int time = 0;
@@ -174,9 +176,14 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // 游戏结束检查
         if (heroAircraft.getHp() <= 0) {
-            // 游戏结束
+            // 游戏结束,跳转结束页面
+            Context context = getContext(); // from GameSurfaceView/Activity
             gameOverFlag = true;
             System.out.println("Game Over!");
+            Intent intent = new Intent(context, EndActivity.class);
+            context.startActivity(intent);
+
+
         }
 
     }
@@ -344,7 +351,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    public int getScore(){
+    public static  int getScore(){
         return score;
     }
 
