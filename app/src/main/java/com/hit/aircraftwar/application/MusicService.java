@@ -31,6 +31,8 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        player = MediaPlayer.create(this, R.raw.bgm);
+        player.setLooping(true);
         Log.d(Tag, "MusicService Created");
         if (Build.VERSION.SDK_INT < 21) {
             mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);

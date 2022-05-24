@@ -111,4 +111,7 @@ public class HeroAircraft extends AbstractAircraft {
 
     @Override
     public boolean isBoss(){return false;}
+
+
+
 }

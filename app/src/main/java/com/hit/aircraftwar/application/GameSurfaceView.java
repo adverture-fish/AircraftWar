@@ -2,6 +2,8 @@ package com.hit.aircraftwar.application;
 
 
 
+import static com.hit.aircraftwar.activity.MainActivity.myBinder;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -90,8 +92,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     protected int enemyCreateCycleDuration = 600;
     protected int bossDefeatNumber = 0;
 
-
-//    private final MusicService.MyBinder myBinder;
     private final SurfaceHolder mSurfaceHolder;
     private final Paint mPaint;
     Canvas canvas ;
@@ -106,7 +106,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         executorService = new ScheduledThreadPoolExecutor(3);
 
-//        this.myBinder = myBinder;
         this.difficulty = difficulty;
         if("medium".equals(difficulty)){
             backGroundImage = ImageManager.BACKGROUND_IMAGE_MEDIUM;
@@ -154,7 +153,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     if(!bossExist && isBossAppear){
                         bossExist = true;
                         bossHasAppear = true;
-//                    myBinder.playBossBgm();
+                        if(myBinder != null){
+                            myBinder.playBossBgm();
+                        }
                         AbstractEnemyFactory factory = new BossEnemyFactory();
                         enemyAircrafts.add(factory.createEnemy(bossHpRate));
                     }
@@ -197,7 +198,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             Context context = getContext(); // from GameSurfaceView/Activity
             gameOverFlag = true;
             nextState = true;
-//            myBinder.playGameOver();
+            if(myBinder != null){
+                myBinder.playGameOver();
+            }
             System.out.println("Game Over!");
             Intent intent = new Intent(context, EndActivity.class);
             context.startActivity(intent);
@@ -245,13 +248,17 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private void heroShootAction() {
 
         // 英雄射击
-//        myBinder.playShoot();
+        if(myBinder != null){
+            myBinder.playShoot();
+        }
         heroBullets.addAll(heroAircraft.shoot());
     }
 
     private void enemyShootAction() {
         // 敌机射击
-//        myBinder.playShoot();
+        if(myBinder != null){
+            myBinder.playShoot();
+        }
         for(AbstractAircraft aircraft : enemyAircrafts){
             List<BaseBullet> bullets = aircraft.shoot();
             enemyBullets.addAll(bullets);
@@ -337,7 +344,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 if (enemyAircraft.crash(bullet)) {
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
-//                    myBinder.playHit();
+                    if(myBinder != null){
+                        myBinder.playHit();
+                    }
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     aircraftObserver.removeBullet(bullet);
@@ -345,7 +354,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         //  获得分数，产生道具补给
                         aircraftObserver.removeAircraft(enemyAircraft);
                         if(enemyAircraft.isBoss()){
-//                            myBinder.playBgm();
+                            if(myBinder != null){
+                                myBinder.playBgm();
+                            }
                             bossExist = false;
                             bossDefeatNumber++;
                         }
@@ -370,7 +381,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             if (heroAircraft.crash(prop)) {
                 // 英雄机捡到道具
                 // 道具生效
-//                myBinder.playSupply();
+                if(myBinder != null){
+                    myBinder.playSupply();
+                }
                 score += prop.effect(heroAircraft, aircraftObserver);
                 prop.vanish();
             }
@@ -423,7 +436,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         //绘制英雄机
         canvas.drawBitmap(ImageManager.HERO_IMAGE, heroAircraft.getLocationX() - (float)ImageManager.HERO_IMAGE.getWidth() / 2,
                 heroAircraft.getLocationY() - (float)ImageManager.HERO_IMAGE.getHeight() / 2, mPaint);
-
         //绘制敌机和子弹
         paintImageWithPositionRevised(allProp);
         paintImageWithPositionRevised(enemyAircrafts);

@@ -2,15 +2,11 @@ package com.hit.aircraftwar.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ComponentName;
-import android.content.Context;
+
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.hit.aircraftwar.R;
@@ -20,7 +16,6 @@ import com.hit.aircraftwar.aircraft.HeroAircraft;
 import com.hit.aircraftwar.aircraft.MobEnemy;
 import com.hit.aircraftwar.application.GameSurfaceView;
 import com.hit.aircraftwar.application.ImageManager;
-import com.hit.aircraftwar.application.MusicService;
 import com.hit.aircraftwar.bullet.EnemyBullet;
 import com.hit.aircraftwar.bullet.HeroBullet;
 import com.hit.aircraftwar.prop.BombSupplyProp;
@@ -28,7 +23,7 @@ import com.hit.aircraftwar.prop.FireSupplyProp;
 import com.hit.aircraftwar.prop.HpSupplyProp;
 
 public class GameActivity extends AppCompatActivity {
-    private MusicService.MyBinder myBinder;
+
 
     public static int screenWidth;
     public static int screenHeight;
@@ -41,20 +36,6 @@ public class GameActivity extends AppCompatActivity {
     public static float getHeroLocationY() {
         return heroLocationY;
     }
-
-    Connect conn ;
-//    private final ServiceConnection conn = new ServiceConnection(){
-//        @Override
-//        public void onServiceConnected(ComponentName name, IBinder service){
-//            System.out.println("Connected");
-//            myBinder = (MusicService.MyBinder) service;
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName componentName) {
-//            System.out.println("Disconnected");
-//        }
-//    };
 
     private static float heroLocationX;
     private static float heroLocationY;
@@ -74,11 +55,6 @@ public class GameActivity extends AppCompatActivity {
         prepareImageResources();
         prepareHashMapImages();
 
-        conn = new Connect();
-        Intent musicIntent = new Intent(this, MusicService.class);
-        bindService(musicIntent, conn, Context.BIND_AUTO_CREATE);
-        System.out.println(myBinder);
-//        myBinder.playHit();
 
         gameSurfaceView = new GameSurfaceView(this, difficulty);
         if(screenHeight !=0 && screenWidth !=0){
@@ -96,7 +72,9 @@ public class GameActivity extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event){
         heroLocationX = event.getX();
-        heroLocationY = event.getY();
+        heroLocationY = event.getY() - ImageManager.HERO_IMAGE.getHeight();
+
+
         return true;
 
     }
@@ -140,22 +118,7 @@ public class GameActivity extends AppCompatActivity {
         ImageManager.CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ImageManager.ENEMY_BULLET_IMAGE);
     }
 
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        unbindService(conn);
-    }
 
-    class Connect implements ServiceConnection {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service){
-            Log.i("music demo","Service Connnected");
-            myBinder = (MusicService.MyBinder)service;
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
 
-        }
-    }
 }
