@@ -17,18 +17,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AircraftWar"
         tools:targetApi="31">
+        <activity
+            android:name=".activity.MainActivity"
+            android:exported="true" />
+
         <service
             android:name=".application.MusicService"
             android:enabled="true"
             android:exported="true" />
+
         <activity
             android:name=".activity.EndActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".activity.GameActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ChooseActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

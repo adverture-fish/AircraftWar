@@ -1,8 +1,6 @@
 package com.hit.aircraftwar.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -22,11 +20,10 @@ import com.hit.aircraftwar.prop.BombSupplyProp;
 import com.hit.aircraftwar.prop.FireSupplyProp;
 import com.hit.aircraftwar.prop.HpSupplyProp;
 
-public class GameActivity extends AppCompatActivity {
-
-
+public class GameActivity extends Activity {
     public static int screenWidth;
     public static int screenHeight;
+    private HeroAircraft heroAircraft;
 
     //触摸点数据，因为只有一组数据故设为静态变量，方便取得
     public static  float getHeroLocationX() {
@@ -45,18 +42,18 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        Intent gameIntent = getIntent();
-        String difficulty = gameIntent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
         getScreenHW();
         //准备图片
         prepareImageResources();
         prepareHashMapImages();
 
+        Intent intent = getIntent();
+        String difficulty = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 
         gameSurfaceView = new GameSurfaceView(this, difficulty);
+        heroAircraft = HeroAircraft.getHeroAircraft();
         if(screenHeight !=0 && screenWidth !=0){
             heroLocationX = (float) screenWidth / 2;
             heroLocationY =(float) (screenHeight - ImageManager.HERO_IMAGE.getHeight() / 2);
@@ -72,14 +69,10 @@ public class GameActivity extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event){
         heroLocationX = event.getX();
-        heroLocationY = event.getY() - ImageManager.HERO_IMAGE.getHeight();
-
-
+        heroLocationY = event.getY();
         return true;
 
     }
-
-
     public void getScreenHW() {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -87,6 +80,7 @@ public class GameActivity extends AppCompatActivity {
         screenWidth = dm.widthPixels;
         screenHeight = dm.heightPixels;
     }
+
 
 
     private void prepareImageResources() {
@@ -117,8 +111,6 @@ public class GameActivity extends AppCompatActivity {
         ImageManager.CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), ImageManager.HERO_BULLET_IMAGE);
         ImageManager.CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ImageManager.ENEMY_BULLET_IMAGE);
     }
-
-
 
 
 }

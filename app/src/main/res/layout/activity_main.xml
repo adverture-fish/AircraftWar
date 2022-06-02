@@ -54,6 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/mediumButton"
         tools:visibility="visible" />
 
+
     <Switch
         android:id="@+id/musicSwitch"
         android:layout_width="120dp"
@@ -98,5 +99,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
