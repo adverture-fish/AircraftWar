@@ -23,10 +23,13 @@ public class SocketConnection {
          //输入流
          InputStream is = socket.getInputStream();
          BufferedReader br = new BufferedReader(new InputStreamReader(is));
-         pw.print(name);
+         pw.println(name);
          pw.println(password);
-         pw.write("bye");
-
-         return true;
+         String s = br.readLine();
+         if(s.equals("finish")){
+             return true;
+         }
+         pw.println(s);
+         return false;
      }
 }

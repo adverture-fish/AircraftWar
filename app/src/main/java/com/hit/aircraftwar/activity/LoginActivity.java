@@ -15,19 +15,29 @@ import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
 
+    Boolean loginFlag = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Button login = (Button) findViewById(R.id.loginButton);
+        Button enroll = (Button)findViewById(R.id.enrollButton);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                     gameLunch();
+
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        enroll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enrollLunch();
             }
         });
     }
@@ -42,14 +52,24 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
                 SocketConnection socketConnection = new SocketConnection();
                 try {
-                    socketConnection.handle(username, password);
+                    loginFlag = socketConnection.handle(username, password);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
         loginThread.start();
-        Intent intent = new Intent(this, MainActivity.class);
+        while(true){
+            if(loginFlag){
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                break;
+            }
+        }
+    }
+
+    private void enrollLunch(){
+        Intent intent = new Intent(this, EnrollActivity.class);
         startActivity(intent);
     }
 }
