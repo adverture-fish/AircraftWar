@@ -25,7 +25,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     gameLunch();
-                    this.wait();
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -50,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         loginThread.start();
-        this.notify();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
