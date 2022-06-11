@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
                 SocketConnection socketConnection = new SocketConnection();
                 try {
-                    loginFlag = socketConnection.handle(username, password);
+                    loginFlag = socketConnection.handle(username, password, "0");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

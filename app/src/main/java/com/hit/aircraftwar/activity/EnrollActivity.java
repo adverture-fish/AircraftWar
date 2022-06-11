@@ -45,7 +45,7 @@ public class EnrollActivity extends AppCompatActivity {
             public void run() {
                 SocketConnection socketConnection = new SocketConnection();
                 try {
-                    enrollFlag = socketConnection.handle(name, password);
+                    enrollFlag = socketConnection.handle(name, password, "1");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -54,7 +54,7 @@ public class EnrollActivity extends AppCompatActivity {
         enrollThread.start();
         while(true){
             if(enrollFlag){
-                Intent intent = new Intent(this, GameActivity.class);
+                Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 break;
             }
