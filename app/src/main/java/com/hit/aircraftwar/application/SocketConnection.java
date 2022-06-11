@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class SocketConnection {
      public boolean handle(String name , String password, String enrollFlag) throws IOException {
@@ -18,17 +20,20 @@ public class SocketConnection {
          //获取输出流
          Log.i("client", "handle: connect to server");
          OutputStream os = socket.getOutputStream();
-         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, "UTF-8" )),true);
+         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)),true);
          //输入流
          InputStream is = socket.getInputStream();
          BufferedReader br = new BufferedReader(new InputStreamReader(is));
          pw.println(enrollFlag);
          pw.println(name);
          pw.println(password);
+
          String s = br.readLine();
-         if(s.equals("finish")){
-             return true;
+         System.out.println(s);
+         while(!Objects.equals(s, "finish")){
+             System.out.println(s);
+             s = br.readLine();
          }
-         return false;
+         return true;
      }
 }

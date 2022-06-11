@@ -22,41 +22,30 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Button login = (Button) findViewById(R.id.loginButton);
-        Button enroll = (Button)findViewById(R.id.enrollButton);
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    gameLunch();
+        Button login = findViewById(R.id.loginButton);
+        Button enroll = findViewById(R.id.enrollButton);
+        login.setOnClickListener(v -> {
+            try {
+                gameLunch();
 
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
         });
-        enroll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enrollLunch();
-            }
-        });
+        enroll.setOnClickListener(v -> enrollLunch());
     }
     //获取游戏账户和密码，启动游戏等
     private void gameLunch() throws IOException, InterruptedException {
-        EditText usernameText = (EditText)findViewById(R.id.usernameText);
-        EditText passwordText = (EditText)findViewById(R.id.passwordText);
+        EditText usernameText = findViewById(R.id.usernameText);
+        EditText passwordText = findViewById(R.id.passwordText);
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
-        Thread loginThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SocketConnection socketConnection = new SocketConnection();
-                try {
-                    loginFlag = socketConnection.handle(username, password, "0");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        Thread loginThread = new Thread(() -> {
+            SocketConnection socketConnection = new SocketConnection();
+            try {
+                loginFlag = socketConnection.handle(username, password, "0");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
         loginThread.start();
@@ -64,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
             if(loginFlag){
                 AlertDialog.Builder informDialog = new AlertDialog.Builder(LoginActivity.this);
                 informDialog.setTitle("login success");
-
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 break;

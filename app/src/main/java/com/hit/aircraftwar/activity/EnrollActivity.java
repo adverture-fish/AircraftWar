@@ -23,33 +23,27 @@ public class EnrollActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enroll2);
-        Button enroll = (Button) findViewById(R.id.enrollButton);
-        enroll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getMessage();
-                enroll();
-            }
+        Button enroll = findViewById(R.id.enrollButton);
+        enroll.setOnClickListener(v -> {
+            getMessage();
+            enroll();
         });
     }
 
     private void getMessage(){
-        TextView nameText = (TextView) findViewById(R.id.usernameText);
-        TextView passwordText = (TextView) findViewById(R.id.passwordText);
+        TextView nameText = findViewById(R.id.usernameText);
+        TextView passwordText = findViewById(R.id.passwordText);
         name = nameText.getText().toString();
         password = passwordText.getText().toString();
     }
 
     private  void enroll(){
-        Thread enrollThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SocketConnection socketConnection = new SocketConnection();
-                try {
-                    enrollFlag = socketConnection.handle(name, password, "1");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        Thread enrollThread = new Thread(() -> {
+            SocketConnection socketConnection = new SocketConnection();
+            try {
+                enrollFlag = socketConnection.handle(name, password, "1");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
         enrollThread.start();

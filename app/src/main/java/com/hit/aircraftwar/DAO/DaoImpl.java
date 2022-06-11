@@ -39,10 +39,7 @@ public class DaoImpl implements DAO {
             oos.close();
             fos.close();
         } catch (EOFException ignored) {
-
         }
-
-
     }
 
     @Override

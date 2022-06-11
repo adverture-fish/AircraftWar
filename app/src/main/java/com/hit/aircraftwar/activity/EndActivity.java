@@ -72,29 +72,21 @@ public class EndActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                ListView listView = (ListView) findViewById(R.id.rankingList);
+                ListView listView = findViewById(R.id.rankingList);
                 ArrayAdapter<Record> adapter = new ArrayAdapter<>(EndActivity.this, androidx.constraintlayout.widget.R.layout.support_simple_spinner_dropdown_item, res);
                 listView.setAdapter(adapter);
                 //获取点击的位置
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        selectedNumber = position;
-                    }
-                });
+                listView.setOnItemClickListener((parent, view, position, id) -> selectedNumber = position);
                 System.out.println(res);
-                Button deleteButton = (Button) findViewById(R.id.deleteButton);
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        res.remove(selectedNumber);
-                        try {
-                            dao.doAdd(res, path, EndActivity.this);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        adapter.notifyDataSetChanged();
+                Button deleteButton = findViewById(R.id.deleteButton);
+                deleteButton.setOnClickListener(v -> {
+                    res.remove(selectedNumber);
+                    try {
+                        dao.doAdd(res, path, EndActivity.this);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    adapter.notifyDataSetChanged();
                 });
             }
         });

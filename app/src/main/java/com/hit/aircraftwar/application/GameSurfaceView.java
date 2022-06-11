@@ -256,9 +256,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private void enemyShootAction() {
         // 敌机射击
-        if(myBinder != null){
-            myBinder.playShoot();
-        }
         for(AbstractAircraft aircraft : enemyAircrafts){
             List<BaseBullet> bullets = aircraft.shoot();
             enemyBullets.addAll(bullets);

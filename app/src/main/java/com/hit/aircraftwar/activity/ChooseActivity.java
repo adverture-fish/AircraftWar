@@ -15,14 +15,14 @@ public class ChooseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose);
-        Button singleButton = (Button) findViewById(R.id.singleGame);
+        Button singleButton = findViewById(R.id.singleGame);
         singleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 singleGameLunch();
             }
         });
-        Button onlineButton = (Button) findViewById(R.id.onlineGame);
+        Button onlineButton = findViewById(R.id.onlineGame);
         onlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
