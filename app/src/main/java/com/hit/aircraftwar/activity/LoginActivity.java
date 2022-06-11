@@ -18,6 +18,9 @@ public class LoginActivity extends AppCompatActivity {
 
     Boolean loginFlag = false;
 
+    Boolean falseFlag = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,12 +52,36 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         loginThread.start();
+        Thread waitThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    if(!loginFlag){
+                        falseFlag = true;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        waitThread.start();
         while(true){
+
             if(loginFlag){
                 AlertDialog.Builder informDialog = new AlertDialog.Builder(LoginActivity.this);
                 informDialog.setTitle("login success");
+                informDialog.show();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                break;
+            }
+            else if(falseFlag){
+                AlertDialog.Builder failDialog = new AlertDialog.Builder(LoginActivity.this);
+                failDialog.setTitle("Login Fail ,please retry");
+                failDialog.show();
+                passwordText.setText("");
+                falseFlag = false;
                 break;
             }
         }

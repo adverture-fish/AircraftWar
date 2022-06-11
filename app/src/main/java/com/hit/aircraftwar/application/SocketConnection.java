@@ -1,6 +1,9 @@
 package com.hit.aircraftwar.application;
 
+import android.app.Activity;
 import android.util.Log;
+
+import androidx.appcompat.app.AlertDialog;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
