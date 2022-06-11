@@ -1,5 +1,6 @@
 package com.hit.aircraftwar.activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -61,6 +62,9 @@ public class LoginActivity extends AppCompatActivity {
         loginThread.start();
         while(true){
             if(loginFlag){
+                AlertDialog.Builder informDialog = new AlertDialog.Builder(LoginActivity.this);
+                informDialog.setTitle("login success");
+
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 break;

@@ -29,7 +29,6 @@ public class SocketConnection {
          if(s.equals("finish")){
              return true;
          }
-         pw.println(s);
          return false;
      }
 }

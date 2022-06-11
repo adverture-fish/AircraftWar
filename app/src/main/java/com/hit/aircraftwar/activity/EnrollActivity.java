@@ -1,5 +1,6 @@
 package com.hit.aircraftwar.activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -54,6 +55,8 @@ public class EnrollActivity extends AppCompatActivity {
         enrollThread.start();
         while(true){
             if(enrollFlag){
+                AlertDialog.Builder informDialog = new AlertDialog.Builder(EnrollActivity.this);
+                informDialog.setTitle("enroll success");
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 break;
