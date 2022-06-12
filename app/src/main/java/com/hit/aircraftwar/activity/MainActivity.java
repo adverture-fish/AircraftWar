@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity  {
         else{
             Intent gameIntent = new Intent(this, GameActivity.class);
             gameIntent.putExtra(EXTRA_MESSAGE, message);
-            gameIntent.putExtra("online", false);
+            gameIntent.putExtra("onlineFlag", false);
             startActivity(gameIntent);
             if(myBinder != null){
                 myBinder.playBgm();

@@ -53,7 +53,7 @@ public class GameActivity extends Activity {
         String difficulty = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         Boolean onlineFlag =  intent.getBooleanExtra("online", false);
 
-        gameSurfaceView = new GameSurfaceView(this, difficulty,onlineFlag);
+        gameSurfaceView = new GameSurfaceView(this, difficulty, onlineFlag);
         heroAircraft = HeroAircraft.getHeroAircraft();
         if(screenHeight !=0 && screenWidth !=0){
             heroLocationX = (float) screenWidth / 2;

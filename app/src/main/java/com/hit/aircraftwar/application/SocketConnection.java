@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class SocketConnection {
 
@@ -27,6 +28,8 @@ public class SocketConnection {
     private Socket socket;
 
     private PrintWriter pw;
+
+
 
     private  BufferedReader br;
      public boolean handle(String name , String password, String enrollFlag) throws IOException {
@@ -62,13 +65,15 @@ public class SocketConnection {
          return true;
      }
 
+
+
      public void sendScore(int score) throws IOException {
          pw.println(score);
          String s = br.readLine();
 
      }
 
-     public String getGameOverMessage() throws IOException {
+     public String readMessage() throws IOException {
         return br.readLine();
      }
 }

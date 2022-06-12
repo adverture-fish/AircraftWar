@@ -30,10 +30,12 @@ import com.hit.aircraftwar.factory.MobEnemyFactory;
 import com.hit.aircraftwar.observer.AircraftObserver;
 import com.hit.aircraftwar.prop.AbstractProp;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 
 /**
@@ -67,6 +69,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     protected boolean nextState = false;
     public static boolean bossExist = false;
     private static int score = 0;
+    private  int opponentScore = 0;
     private boolean bossHasAppear = false;
     private int stage = 0;
     protected int time = 0;
@@ -195,7 +198,22 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             // 绘图
             draw();
 
+            //更新对手分数,并发送自己分数
+            if(onlineFlag){
+                try {
+                    String s = socketConnection.readMessage();
+                    if(isNumeric(s)){
+                        opponentScore = Integer.parseInt(s);
+                        socketConnection.sendScore(score);
+                    }
+                    else if(s.equals("game over")){
+                        gameOverFlag = true;
+                    }
 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
         // 游戏结束检查
         if (heroAircraft.getHp() <= 0 && !nextState) {
@@ -396,6 +414,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return score;
     }
 
+    private static final Pattern PATTERN = Pattern.compile("[0-9]*");
+
+    public boolean isNumeric(String message){
+        return PATTERN.matcher(message).matches();
+    }
+
     /**
      * 后处理：
      * 1. 删除无效的子弹
@@ -421,7 +445,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
 
     private void draw(){
-        //通过SurfaceHolder对象的lockCanvans()方法，我们可以获取当前的Canvas绘图对象
+        //通过SurfaceHolder对象的lockCanvas()方法，我们可以获取当前的Canvas绘图对象
         canvas = mSurfaceHolder.lockCanvas();
         //绘图的画布
         if(canvas == null){
@@ -469,7 +493,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         canvas.drawText("SCORE:" + score, x, y, mPaint);
         y = y + 80;
         canvas.drawText("LIFE:" + this.heroAircraft.getHp(), x, y, mPaint);
+        if(onlineFlag){
+            y = y + 80;
+            canvas.drawText("opponent_score:" + opponentScore, x, y, mPaint);
+        }
     }
+
 
     /**
      * 游戏启动入口，执行游戏逻辑
