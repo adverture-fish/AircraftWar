@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 
 import com.hit.aircraftwar.activity.EndActivity;
 import com.hit.aircraftwar.activity.GameActivity;
+import com.hit.aircraftwar.activity.LoginActivity;
 import com.hit.aircraftwar.aircraft.AbstractAircraft;
 import com.hit.aircraftwar.aircraft.HeroAircraft;
 import com.hit.aircraftwar.basic.AbstractFlyingObject;
@@ -48,6 +49,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * Scheduled 线程池，用于任务调度
      */
     private final ScheduledExecutorService executorService;
+
+    private SocketConnection socketConnection = LoginActivity.getSocketConnection();
 
     /**
      * 时间间隔(ms)，控制刷新频率
@@ -98,14 +101,16 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     int backGroundTop = 0;
     int screenWidth = GameActivity.screenWidth, screenHeight = GameActivity.screenHeight;
     boolean gameOverFlag;
+    private Boolean onlineFlag;
 
-    public GameSurfaceView(Context context, String difficulty) {
+    public GameSurfaceView(Context context, String difficulty, Boolean onlineFlag) {
 
         super(context);
         gameOverFlag = false;
 
         executorService = new ScheduledThreadPoolExecutor(3);
 
+        this.onlineFlag = onlineFlag;
         this.difficulty = difficulty;
         if("medium".equals(difficulty)){
             backGroundImage = ImageManager.BACKGROUND_IMAGE_MEDIUM;

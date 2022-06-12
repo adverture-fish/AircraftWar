@@ -33,6 +33,7 @@ public class ChooseActivity extends AppCompatActivity {
 
     private void singleGameLunch(){
         Intent singleGame = new Intent(this, MainActivity.class);
+        singleGame.putExtra("online", "false");
         startActivity(singleGame);
     }
     private void onlineGameLunch(){

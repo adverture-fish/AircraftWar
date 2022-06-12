@@ -24,11 +24,14 @@ public class MainActivity extends AppCompatActivity  {
     Connect conn ;
     public static MusicService.MyBinder myBinder;
 
+    private String onlineFlag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         musicLunch();
+        onlineFlag = getIntent().getStringExtra("online");
         Button easyButton  = findViewById(R.id.easyButton);
         easyButton.setOnClickListener(v -> gameLunch("easy"));
         Button mediumButton = findViewById(R.id.mediumButton);
@@ -60,11 +63,19 @@ public class MainActivity extends AppCompatActivity  {
 
 
     public void gameLunch(String message){
-        Intent gameIntent = new Intent(this, GameActivity.class);
-        gameIntent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(gameIntent);
-        if(myBinder != null){
-            myBinder.playBgm();
+        if(onlineFlag.equals("true")){
+            Intent waitIntent = new Intent(this, WaitActivity.class);
+            waitIntent.putExtra(EXTRA_MESSAGE, message);
+            startActivity(waitIntent);
+        }
+        else{
+            Intent gameIntent = new Intent(this, GameActivity.class);
+            gameIntent.putExtra(EXTRA_MESSAGE, message);
+            gameIntent.putExtra("online", false);
+            startActivity(gameIntent);
+            if(myBinder != null){
+                myBinder.playBgm();
+            }
         }
     }
 

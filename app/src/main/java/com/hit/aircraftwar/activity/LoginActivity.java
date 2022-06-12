@@ -20,6 +20,11 @@ public class LoginActivity extends AppCompatActivity {
 
     Boolean falseFlag = false;
 
+    private static  SocketConnection socketConnection = new SocketConnection();
+
+    public static SocketConnection getSocketConnection() {
+        return socketConnection;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
         Thread loginThread = new Thread(() -> {
-            SocketConnection socketConnection = new SocketConnection();
             try {
                 loginFlag = socketConnection.handle(username, password, "0");
             } catch (IOException e) {
@@ -73,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                 informDialog.setTitle("login success");
                 informDialog.show();
                 Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("online","true");
                 startActivity(intent);
                 break;
             }

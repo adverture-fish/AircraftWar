@@ -18,15 +18,26 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class SocketConnection {
+
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    private Socket socket;
+
+    private PrintWriter pw;
+
+    private  BufferedReader br;
      public boolean handle(String name , String password, String enrollFlag) throws IOException {
-         Socket socket = new Socket("10.0.2.2", 9999);
+         socket = new Socket("10.0.2.2", 9999);
          //获取输出流
          Log.i("client", "handle: connect to server");
          OutputStream os = socket.getOutputStream();
-         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)),true);
+         pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)),true);
          //输入流
          InputStream is = socket.getInputStream();
-         BufferedReader br = new BufferedReader(new InputStreamReader(is));
+         br = new BufferedReader(new InputStreamReader(is));
          pw.println(enrollFlag);
          pw.println(name);
          pw.println(password);
@@ -38,5 +49,26 @@ public class SocketConnection {
              s = br.readLine();
          }
          return true;
+     }
+
+     public boolean getPlayer(String difficulty) throws IOException {
+         pw.println(difficulty);
+         String s = br.readLine();
+         System.out.println(s);
+         while(!Objects.equals(s, "start")){
+             System.out.println(s);
+             s = br.readLine();
+         }
+         return true;
+     }
+
+     public void sendScore(int score) throws IOException {
+         pw.println(score);
+         String s = br.readLine();
+
+     }
+
+     public String getGameOverMessage() throws IOException {
+        return br.readLine();
      }
 }
