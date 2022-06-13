@@ -25,9 +25,11 @@ public class SocketConnection {
         return socket;
     }
 
-    private Socket socket;
+    private static Socket socket;
 
-    private PrintWriter pw;
+
+
+    private static PrintWriter pw;
 
 
 

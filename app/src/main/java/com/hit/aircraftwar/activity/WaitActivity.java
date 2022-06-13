@@ -3,7 +3,9 @@ package com.hit.aircraftwar.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
 
@@ -16,7 +18,9 @@ public class WaitActivity extends AppCompatActivity {
 
     private String difficulty;
 
-    private Boolean getPlayerFlag;
+    private Boolean getPlayerFlag = false;
+
+    private SocketConnection socketConnection = LoginActivity.getSocketConnection();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,18 +36,26 @@ public class WaitActivity extends AppCompatActivity {
         });
 
         difficulty = getIntent().getStringExtra("difficulty");
-        SocketConnection socketConnection = LoginActivity.getSocketConnection();
-        try {
-             getPlayerFlag = socketConnection.getPlayer(difficulty);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        while (true){
-            if(getPlayerFlag){
-                onlineGameLunch(difficulty);
 
-            }
-        }
+        Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        getPlayerFlag = socketConnection.getPlayer(difficulty);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    while (true){
+                        if(getPlayerFlag){
+                            onlineGameLunch(difficulty);
+                            break;
+                        }
+                    }
+                }
+
+            });
+        t.start();
+
     }
 
     private void singleGameLunch (){

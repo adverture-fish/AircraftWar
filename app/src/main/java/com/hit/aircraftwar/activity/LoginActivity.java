@@ -9,10 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.hit.aircraftwar.R;
 import com.hit.aircraftwar.application.SocketConnection;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
