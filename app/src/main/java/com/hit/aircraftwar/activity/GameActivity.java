@@ -51,7 +51,7 @@ public class GameActivity extends Activity {
 
         Intent intent = getIntent();
         String difficulty = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        Boolean onlineFlag =  intent.getBooleanExtra("online", false);
+        Boolean onlineFlag =  intent.getBooleanExtra("onlineFlag", false);
 
         gameSurfaceView = new GameSurfaceView(this, difficulty, onlineFlag);
         heroAircraft = HeroAircraft.getHeroAircraft();

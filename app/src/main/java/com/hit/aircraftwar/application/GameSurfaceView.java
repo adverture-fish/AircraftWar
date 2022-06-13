@@ -198,13 +198,14 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             // 绘图
             draw();
 
+
             //更新对手分数,并发送自己分数
             if(onlineFlag){
                 try {
+                    socketConnection.sendScore(score);
                     String s = socketConnection.readMessage();
                     if(isNumeric(s)){
                         opponentScore = Integer.parseInt(s);
-                        socketConnection.sendScore(score);
                     }
                     else if(s.equals("game over")){
                         gameOverFlag = true;

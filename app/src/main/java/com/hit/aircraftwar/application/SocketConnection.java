@@ -71,7 +71,6 @@ public class SocketConnection {
 
      public void sendScore(int score) throws IOException {
          pw.println(score);
-         String s = br.readLine();
 
      }
 

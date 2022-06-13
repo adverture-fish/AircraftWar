@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                 informDialog.setTitle("login success");
                 informDialog.show();
                 Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("online","true");
+                intent.putExtra("onlineFlag",true);
                 startActivity(intent);
                 break;
             }
